@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-gray-950 text-white;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+  .note-button {
+    @apply min-h-[44px] min-w-[44px] rounded-lg font-semibold text-sm
+           transition-colors duration-150 select-none
+           active:scale-95 touch-manipulation;
+  }
+}
