@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { progressTracker } from '../utils/progressTracker'
 import { LESSONS } from '../data/lessons'
 import { LessonProgress } from '../types'
@@ -29,6 +29,7 @@ function groupByLevel() {
 
 export default function LessonsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [progress, setProgress] = useState<LessonProgress[]>([])
   const [toast, setToast] = useState<string | null>(null)
   const [expandedLevels, setExpandedLevels] = useState<Set<number>>(new Set([1]))
@@ -39,8 +40,9 @@ export default function LessonsPage() {
       setToast("We couldn't load your previous progress. Starting fresh.")
       setTimeout(() => setToast(null), 4000)
     }
-    setProgress(progressTracker.getProgress())
-  }, [])
+    // Force recompute from sessions (bypass stale cache)
+    setProgress(progressTracker.recomputeProgress())
+  }, [location])
 
   const progressMap = new Map(progress.map((p) => [p.lessonId, p]))
   const levelGroups = groupByLevel()

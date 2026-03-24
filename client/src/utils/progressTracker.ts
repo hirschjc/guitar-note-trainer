@@ -75,6 +75,10 @@ export class ProgressTracker {
     return [];
   }
 
+  recomputeProgress(): LessonProgress[] {
+    return this._recomputeAndCacheProgress();
+  }
+
   getProgress(): LessonProgress[] {
     const cached = readLocalStorage<LessonProgress[]>(STORAGE_KEYS.PROGRESS);
     if (Array.isArray(cached) && cached.length > 0) return cached;
