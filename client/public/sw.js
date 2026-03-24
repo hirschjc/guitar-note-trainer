@@ -1,4 +1,4 @@
-const CACHE_NAME = 'guitar-note-trainer-v1';
+const CACHE_NAME = 'guitar-note-trainer-v2';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -36,12 +36,18 @@ self.addEventListener('fetch', (event) => {
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
       return fetch(event.request).then((response) => {
-        if (response.ok) {
+        if (response && response.ok) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
+      }).catch(() => {
+        // Network failed and nothing in cache — return a basic offline response
+        return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
       });
+    }).catch(() => {
+      // Cache lookup failed — try network directly
+      return fetch(event.request);
     })
   );
 });
