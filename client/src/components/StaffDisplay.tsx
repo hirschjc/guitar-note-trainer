@@ -108,6 +108,27 @@ export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: St
 
       setIsLoading(false);
       onRenderComplete?.();
+
+      // Post-process: thicken ledger lines in the rendered SVG
+      const svg = container.querySelector('svg');
+      if (svg) {
+        // VexFlow renders ledger lines as <rect> elements with very small height
+        // Target rects that are wider than tall (horizontal lines = ledger lines or staff lines)
+        // Ledger lines are outside the main staff area
+        const rects = svg.querySelectorAll('rect');
+        rects.forEach((rect) => {
+          const w = parseFloat(rect.getAttribute('width') ?? '0');
+          const h = parseFloat(rect.getAttribute('height') ?? '0');
+          // Ledger lines are thin horizontal rects (height < 3, width > 10)
+          if (h > 0 && h < 3 && w > 10) {
+            // Make them thicker by increasing height and adjusting y
+            const currentY = parseFloat(rect.getAttribute('y') ?? '0');
+            const newH = Math.max(h, 2);
+            rect.setAttribute('height', String(newH));
+            rect.setAttribute('y', String(currentY - (newH - h) / 2));
+          }
+        });
+      }
     } catch (err) {
       console.error('StaffDisplay: VexFlow render error', err);
       setRenderError(true);
@@ -166,6 +187,7 @@ export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: St
       <div
         ref={containerRef}
         style={{ width: '100%', visibility: isLoading ? 'hidden' : 'visible', backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '0.5rem' }}
+        className="staff-display-container"
         data-testid="staff-display"
       />
     </div>

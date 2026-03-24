@@ -42,8 +42,36 @@ export class AudioEngine {
   }
 
   /**
+   * Call this synchronously from a user gesture (click/tap) to unlock audio.
+   * Safe to call multiple times.
+   */
+  resume(): void {
+    if (this._initialized || this._unavailable) return;
+    // Fire-and-forget — the important thing is it's called in the gesture handler
+    void Tone.start().then(() => {
+      if (this._initialized) return;
+      try {
+        this.synth = new Tone.Synth({
+          oscillator: { type: 'triangle' },
+          envelope: {
+            attack: 0.01,
+            decay: 0.3,
+            sustain: 0.1,
+            release: 0.5,
+          },
+        }).toDestination();
+        if (this._muted) this.synth.volume.value = -Infinity;
+        this._initialized = true;
+      } catch {
+        this._unavailable = true;
+      }
+    }).catch(() => {
+      this._unavailable = true;
+    });
+  }
+
+  /**
    * Lazily initializes Tone.js on first user interaction.
-   * Must be called before any audio playback (browser autoplay policy).
    */
   private async ensureInitialized(): Promise<boolean> {
     if (this._unavailable) return false;

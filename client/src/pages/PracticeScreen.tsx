@@ -150,6 +150,9 @@ export function PracticeScreen() {
   function handleNoteSelect(buttonLabel: string) {
     if (gameState !== 'playing' || sequence.length === 0) return;
 
+    // Unlock audio context on first user gesture (browser autoplay policy)
+    audioEngine.resume();
+
     const activeNote = sequence[activeNoteIndex];
     if (!activeNote) return;
 

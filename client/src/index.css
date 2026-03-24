@@ -19,4 +19,11 @@
            transition-colors duration-150 select-none
            active:scale-95 touch-manipulation;
   }
+
+  /* Thicken all SVG strokes in the staff display for better visibility */
+  .staff-display-container svg path,
+  .staff-display-container svg rect,
+  .staff-display-container svg line {
+    stroke-width: max(var(--vf-stroke, 1px), 1.5px);
+  }
 }
