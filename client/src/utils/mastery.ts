@@ -8,10 +8,14 @@ function clamp(value: number, min: number, max: number): number {
 /**
  * Calculates a mastery score from session stats.
  *
- * score = (correctCount / totalNotes) * 100 * timeBonus
- * timeBonus = clamp(1.0 - (avgResponseTimeMs - 2000) / 10000, 0.7, 1.0)
+ * Speed requirement: >1300ms avg response = 0 score (slower than ~46 BPM).
+ * Full credit at ≤666ms avg response (~90 BPM).
+ * Linear scale between 666ms and 1300ms.
  *
- * Returns 0 if totalNotes is 0.
+ * score = accuracy * speedMultiplier
+ * speedMultiplier = clamp((1000 - avgMs) / 500, 0, 1)
+ *
+ * Returns 0 if totalNotes is 0 or avg response > 1000ms.
  * Final score is clamped to [0, 100].
  */
 export function calculateMasteryScore(
@@ -23,10 +27,17 @@ export function calculateMasteryScore(
   if (totalNotes === 0) return 0;
 
   const avgResponseTimeMs = totalTimeMs / totalNotes;
-  const timeBonus = clamp(1.0 - (avgResponseTimeMs - 2000) / 10000, 0.7, 1.0);
-  const score = (correctCount / totalNotes) * 100 * timeBonus;
 
-  return clamp(score, 0, 100);
+  // Hard cutoff: slower than ~46 BPM (1300ms/note) = no mastery credit
+  if (avgResponseTimeMs > 1300) return 0;
+
+  // Speed multiplier: 1.0 at ≤666ms (~90 BPM), 0.0 at 1300ms
+  const speedMultiplier = clamp((1300 - avgResponseTimeMs) / (1300 - 666), 0, 1);
+
+  // Accuracy: only first-attempt correct notes count (incorrectCount already excludes retries)
+  const accuracy = correctCount / totalNotes;
+
+  return clamp(accuracy * 100 * speedMultiplier, 0, 100);
 }
 
 /**
@@ -87,6 +98,7 @@ export function computeLessonProgress(
       lessonId: lesson.id,
       bestScore: bestScoreMap.get(lesson.id) ?? 0,
       attemptCount: attemptCountMap.get(lesson.id) ?? 0,
+      qualifyingCount: qualifyingSessionsMap.get(lesson.id) ?? 0,
       isUnlocked,
     };
   });
