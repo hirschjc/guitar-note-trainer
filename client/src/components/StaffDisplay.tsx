@@ -17,7 +17,8 @@ const DURATION_MAP: Record<NoteDuration, string> = {
 };
 
 const ACTIVE_NOTE_COLOR = '#f59e0b'; // amber
-const DEFAULT_NOTE_COLOR = '#000000';
+const DEFAULT_NOTE_COLOR = '#ffffff'; // white — visible on dark background
+const STAFF_COLOR = '#e5e7eb'; // light gray for staff lines, clef, time sig
 
 export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: StaffDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,6 +45,9 @@ export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: St
       const renderer = new Renderer(container, Renderer.Backends.SVG);
       renderer.resize(containerWidth, totalHeight);
       const context = renderer.getContext();
+      // Set default stroke/fill to light color for dark background
+      context.setStrokeStyle(STAFF_COLOR);
+      context.setFillStyle(STAFF_COLOR);
 
       let flatNoteIndex = 0;
 
@@ -161,7 +165,7 @@ export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: St
       )}
       <div
         ref={containerRef}
-        style={{ width: '100%', visibility: isLoading ? 'hidden' : 'visible' }}
+        style={{ width: '100%', visibility: isLoading ? 'hidden' : 'visible', backgroundColor: '#1f2937', borderRadius: '0.5rem', padding: '0.5rem' }}
         data-testid="staff-display"
       />
     </div>
