@@ -63,6 +63,7 @@ export function PracticeScreen() {
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const [currentNoteHadError, setCurrentNoteHadError] = useState(false); // tracks if current note was missed
   const [startTime, setStartTime] = useState<number>(0);
   const [lastTappedNote, setLastTappedNote] = useState<string | null>(null);
   const [lastTapCorrect, setLastTapCorrect] = useState<boolean | null>(null);
@@ -131,6 +132,7 @@ export function PracticeScreen() {
     setActiveNoteIndex(0);
     setCorrectCount(0);
     setIncorrectCount(0);
+    setCurrentNoteHadError(false);
     setStartTime(Date.now());
     setLastTappedNote(null);
     setLastTapCorrect(null);
@@ -169,11 +171,13 @@ export function PracticeScreen() {
 
       void audioEngine.playNote(pitchClass, octave);
 
-      const newCorrectCount = correctCount + 1;
+      // Only count as correct toward mastery if this note wasn't previously missed
+      const newCorrectCount = currentNoteHadError ? correctCount : correctCount + 1;
       const newIndex = activeNoteIndex + 1;
 
       setCorrectCount(newCorrectCount);
       setActiveNoteIndex(newIndex);
+      setCurrentNoteHadError(false);
 
       if (newIndex >= sequence.length) {
         // Sequence complete
@@ -207,6 +211,7 @@ export function PracticeScreen() {
       const correctLabel = getCorrectButtonLabel(activeNote);
       setCorrectNote(correctLabel);
       setIncorrectCount((c) => c + 1);
+      setCurrentNoteHadError(true);
 
       if (correctNoteTimerRef.current) clearTimeout(correctNoteTimerRef.current);
       correctNoteTimerRef.current = setTimeout(() => {

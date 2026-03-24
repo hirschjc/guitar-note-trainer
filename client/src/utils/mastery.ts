@@ -1,5 +1,5 @@
 import { LessonProgress } from '../types';
-import { LESSONS, MASTERY_THRESHOLD } from '../data/lessons';
+import { LESSONS, MASTERY_THRESHOLD, MASTERY_REQUIRED_SESSIONS } from '../data/lessons';
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -63,6 +63,14 @@ export function computeLessonProgress(
     attemptCountMap.set(result.lessonId, (attemptCountMap.get(result.lessonId) ?? 0) + 1);
   }
 
+  // Build map of lessonId → qualifying session count (sessions with score >= threshold)
+  const qualifyingSessionsMap = new Map<string, number>();
+  for (const result of sessionResults) {
+    if (result.score >= masteryThreshold) {
+      qualifyingSessionsMap.set(result.lessonId, (qualifyingSessionsMap.get(result.lessonId) ?? 0) + 1);
+    }
+  }
+
   // Walk sorted lessons, computing isUnlocked for each
   return sortedLessons.map((lesson, index) => {
     let isUnlocked: boolean;
@@ -70,8 +78,8 @@ export function computeLessonProgress(
       isUnlocked = true;
     } else {
       const prevLesson = sortedLessons[index - 1];
-      const prevBestScore = bestScoreMap.get(prevLesson.id) ?? 0;
-      isUnlocked = prevBestScore >= masteryThreshold;
+      const prevQualifying = qualifyingSessionsMap.get(prevLesson.id) ?? 0;
+      isUnlocked = prevQualifying >= MASTERY_REQUIRED_SESSIONS;
     }
 
     return {

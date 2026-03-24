@@ -1,6 +1,7 @@
 import { Lesson } from '../types';
 
 export const MASTERY_THRESHOLD = 80;
+export const MASTERY_REQUIRED_SESSIONS = 5; // must score ≥ 80% this many times to unlock next lesson
 
 export const CHROMATIC_NOTES = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'] as const;
 

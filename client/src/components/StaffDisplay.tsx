@@ -112,18 +112,16 @@ export function StaffDisplay({ notation, activeNoteIndex, onRenderComplete }: St
       // Post-process: thicken ledger lines in the rendered SVG
       const svg = container.querySelector('svg');
       if (svg) {
-        // VexFlow renders ledger lines as <rect> elements with very small height
-        // Target rects that are wider than tall (horizontal lines = ledger lines or staff lines)
-        // Ledger lines are outside the main staff area
+        // VexFlow renders all lines (staff lines + ledger lines) as thin <rect> elements
+        // Force all thin horizontal rects to be at least 2.5px tall for visibility
         const rects = svg.querySelectorAll('rect');
         rects.forEach((rect) => {
           const w = parseFloat(rect.getAttribute('width') ?? '0');
           const h = parseFloat(rect.getAttribute('height') ?? '0');
-          // Ledger lines are thin horizontal rects (height < 3, width > 10)
-          if (h > 0 && h < 3 && w > 10) {
-            // Make them thicker by increasing height and adjusting y
+          // Any thin horizontal rect wider than 8px is a staff or ledger line
+          if (h > 0 && h < 4 && w > 8) {
             const currentY = parseFloat(rect.getAttribute('y') ?? '0');
-            const newH = Math.max(h, 2);
+            const newH = 2.5;
             rect.setAttribute('height', String(newH));
             rect.setAttribute('y', String(currentY - (newH - h) / 2));
           }

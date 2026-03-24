@@ -23,6 +23,7 @@ const LESSON_ORDER: string[] = [
 ]
 
 const MASTERY_THRESHOLD = 80
+const MASTERY_REQUIRED_SESSIONS = 5
 
 interface SessionResultInput {
   id: string
@@ -55,10 +56,10 @@ function deriveLessonProgress(
     grouped.set(row.lessonId, scores)
   }
 
-  // Build a bestScore map for unlock chain evaluation
-  const bestScoreMap = new Map<string, number>()
+  // Build a qualifying sessions count map for unlock chain evaluation
+  const qualifyingMap = new Map<string, number>()
   for (const [lessonId, scores] of grouped.entries()) {
-    bestScoreMap.set(lessonId, Math.max(...scores))
+    qualifyingMap.set(lessonId, scores.filter(s => s >= MASTERY_THRESHOLD).length)
   }
 
   // Compute isUnlocked for every lesson in the ordered list
@@ -74,8 +75,8 @@ function deriveLessonProgress(
       isUnlocked = true
     } else {
       const prevLessonId = LESSON_ORDER[i - 1]
-      const prevBest = bestScoreMap.get(prevLessonId) ?? 0
-      isUnlocked = prevBest >= MASTERY_THRESHOLD
+      const prevQualifying = qualifyingMap.get(prevLessonId) ?? 0
+      isUnlocked = prevQualifying >= MASTERY_REQUIRED_SESSIONS
     }
 
     result.push({ deviceId, lessonId, bestScore, attemptCount, isUnlocked })
