@@ -6,7 +6,7 @@ export const MASTERY_REQUIRED_SESSIONS = 5; // must score ≥ 80% this many time
 export const CHROMATIC_NOTES = ['C', 'C#/Db', 'D', 'D#/Eb', 'E', 'F', 'F#/Gb', 'G', 'G#/Ab', 'A', 'A#/Bb', 'B'] as const;
 
 export const LESSONS: Lesson[] = [
-  // ─── Level 1: Middle C and C major scale (C4–C5, natural notes only) ───────
+  // ─── Level 1: C major scale, first octave (C4–C5) ───────────────────────────
 
   {
     id: 'level1-lesson1',
@@ -36,31 +36,102 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 16 },
   },
 
-  // ─── Level 2: Extended range — three octaves (C3–C6, all natural notes) ────
+  // ─── Level 2: C major scale, second octave (C5–C6) ──────────────────────────
+  // Same 7 natural notes, higher register — introduces ledger lines above the staff
 
   {
     id: 'level2-lesson1',
     level: 2,
     order: 1,
-    learningObjective: 'Extend the C major scale down to the third octave (C3–C4)',
-    noteSet: ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4'],
-    octaveRange: [3, 4],
-    sequenceLength: { min: 8, max: 14 },
+    learningObjective: 'Identify the first three notes of the C major scale in the upper octave: C5, D5, and E5',
+    noteSet: ['C5', 'D5', 'E5'],
+    octaveRange: [5, 5],
+    sequenceLength: { min: 6, max: 10 },
   },
   {
     id: 'level2-lesson2',
     level: 2,
     order: 2,
-    learningObjective: 'Extend the C major scale up to the sixth octave (C5–C6)',
-    noteSet: ['C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6'],
-    octaveRange: [5, 6],
-    sequenceLength: { min: 8, max: 14 },
+    learningObjective: 'Identify the first five notes of the upper C major scale: C5 through G5',
+    noteSet: ['C5', 'D5', 'E5', 'F5', 'G5'],
+    octaveRange: [5, 5],
+    sequenceLength: { min: 8, max: 12 },
   },
   {
     id: 'level2-lesson3',
     level: 2,
     order: 3,
-    learningObjective: 'Identify natural notes across three full octaves (C3–C6)',
+    learningObjective: 'Identify all eight notes of the C major scale from C5 to C6 (ledger lines above the staff)',
+    noteSet: ['C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6'],
+    octaveRange: [5, 6],
+    sequenceLength: { min: 8, max: 16 },
+  },
+
+  // ─── Level 3: C major scale, two octaves combined (C4–C6) ───────────────────
+  // Reading across the full two-octave range
+
+  {
+    id: 'level3-lesson1',
+    level: 3,
+    order: 1,
+    learningObjective: 'Identify natural notes spanning the lower and middle octaves: C4 through E5',
+    noteSet: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5'],
+    octaveRange: [4, 5],
+    sequenceLength: { min: 8, max: 14 },
+  },
+  {
+    id: 'level3-lesson2',
+    level: 3,
+    order: 2,
+    learningObjective: 'Identify natural notes spanning the middle and upper octaves: C5 through C6',
+    noteSet: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6'],
+    octaveRange: [4, 6],
+    sequenceLength: { min: 8, max: 14 },
+  },
+  {
+    id: 'level3-lesson3',
+    level: 3,
+    order: 3,
+    learningObjective: 'Identify all natural notes across two full octaves: C4 to C6',
+    noteSet: [
+      'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+      'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5',
+      'C6',
+    ],
+    octaveRange: [4, 6],
+    sequenceLength: { min: 10, max: 16 },
+  },
+
+  // ─── Level 4: Natural notes across three octaves (C3–C6) ────────────────────
+  // Adds the low register below the staff — full practical guitar range
+
+  {
+    id: 'level4-lesson1',
+    level: 4,
+    order: 1,
+    learningObjective: 'Extend down to the third octave: identify natural notes from C3 to C4 (ledger lines below the staff)',
+    noteSet: ['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4'],
+    octaveRange: [3, 4],
+    sequenceLength: { min: 8, max: 14 },
+  },
+  {
+    id: 'level4-lesson2',
+    level: 4,
+    order: 2,
+    learningObjective: 'Identify natural notes spanning the low and middle registers: C3 through C5',
+    noteSet: [
+      'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
+      'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
+      'C5',
+    ],
+    octaveRange: [3, 5],
+    sequenceLength: { min: 10, max: 16 },
+  },
+  {
+    id: 'level4-lesson3',
+    level: 4,
+    order: 3,
+    learningObjective: 'Identify all natural notes across three full octaves: C3 to C6',
     noteSet: [
       'C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3',
       'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4',
@@ -71,11 +142,11 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 10, max: 16 },
   },
 
-  // ─── Level 3: Common intervals (thirds, fifths, octaves within C major, C3–C5) ─
+  // ─── Level 5: Common intervals within C major (thirds, fifths, octaves) ──────
 
   {
-    id: 'level3-lesson1',
-    level: 3,
+    id: 'level5-lesson1',
+    level: 5,
     order: 1,
     learningObjective: 'Identify notes a third apart within C major (C3–C5)',
     noteSet: ['C4', 'E4', 'G4', 'B4', 'D5', 'F4', 'A4', 'C5'],
@@ -83,8 +154,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level3-lesson2',
-    level: 3,
+    id: 'level5-lesson2',
+    level: 5,
     order: 2,
     learningObjective: 'Identify notes a fifth apart within C major (C3–C5)',
     noteSet: ['C3', 'G3', 'D4', 'A4', 'E4', 'B4', 'F4', 'C5'],
@@ -92,8 +163,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level3-lesson3',
-    level: 3,
+    id: 'level5-lesson3',
+    level: 5,
     order: 3,
     learningObjective: 'Identify notes an octave apart within C major (C3–C5)',
     noteSet: ['C3', 'C4', 'C5', 'G3', 'G4', 'E3', 'E4', 'A3', 'A4'],
@@ -101,11 +172,11 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 16 },
   },
 
-  // ─── Level 4: Basic chords — C, G, D, Am, Em (C3–C5) ───────────────────────
+  // ─── Level 6: Basic chords — C, G, D, Am, Em (C3–C5) ───────────────────────
 
   {
-    id: 'level4-lesson1',
-    level: 4,
+    id: 'level6-lesson1',
+    level: 6,
     order: 1,
     learningObjective: 'Identify notes in the C major and G major chords (C3–C5)',
     noteSet: ['C3', 'E3', 'G3', 'C4', 'E4', 'G4', 'B3', 'D4', 'G4', 'B4'],
@@ -113,8 +184,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level4-lesson2',
-    level: 4,
+    id: 'level6-lesson2',
+    level: 6,
     order: 2,
     learningObjective: 'Identify notes in the D major, Am, and Em chords (C3–C5)',
     noteSet: ['D3', 'F#3', 'A3', 'D4', 'F#4', 'A4', 'E3', 'G3', 'B3', 'E4', 'G4', 'B4', 'A3', 'C4', 'E4'],
@@ -122,8 +193,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level4-lesson3',
-    level: 4,
+    id: 'level6-lesson3',
+    level: 6,
     order: 3,
     learningObjective: 'Identify notes across all five basic chords: C, G, D, Am, Em (C3–C5)',
     noteSet: [
@@ -137,11 +208,11 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 10, max: 16 },
   },
 
-  // ─── Level 5: Common keys — G, D, F, Bb major (C3–C5, includes accidentals) ─
+  // ─── Level 7: Common keys — G, D, F, Bb major (C3–C5, includes accidentals) ─
 
   {
-    id: 'level5-lesson1',
-    level: 5,
+    id: 'level7-lesson1',
+    level: 7,
     order: 1,
     learningObjective: 'Identify notes in G major and D major scales (C3–C5)',
     noteSet: [
@@ -152,8 +223,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level5-lesson2',
-    level: 5,
+    id: 'level7-lesson2',
+    level: 7,
     order: 2,
     learningObjective: 'Identify notes in F major and Bb major scales (C3–C5)',
     noteSet: [
@@ -164,8 +235,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level5-lesson3',
-    level: 5,
+    id: 'level7-lesson3',
+    level: 7,
     order: 3,
     learningObjective: 'Identify notes across G, D, F, and Bb major scales with accidentals (C3–C5)',
     noteSet: [
@@ -177,11 +248,11 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 10, max: 16 },
   },
 
-  // ─── Level 6: Complex chords and extended harmony (C3–C6, all 12 chromatic) ─
+  // ─── Level 8: Complex chords and extended harmony (C3–C6, all 12 chromatic) ─
 
   {
-    id: 'level6-lesson1',
-    level: 6,
+    id: 'level8-lesson1',
+    level: 8,
     order: 1,
     learningObjective: 'Identify all 12 chromatic pitch classes in the fourth octave (C4–B4)',
     noteSet: [
@@ -192,8 +263,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 8, max: 14 },
   },
   {
-    id: 'level6-lesson2',
-    level: 6,
+    id: 'level8-lesson2',
+    level: 8,
     order: 2,
     learningObjective: 'Identify chromatic notes across two octaves (C3–C5)',
     noteSet: [
@@ -205,8 +276,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 10, max: 16 },
   },
   {
-    id: 'level6-lesson3',
-    level: 6,
+    id: 'level8-lesson3',
+    level: 8,
     order: 3,
     learningObjective: 'Master all 12 chromatic notes across three octaves (C3–C6)',
     noteSet: [
@@ -219,8 +290,8 @@ export const LESSONS: Lesson[] = [
     sequenceLength: { min: 12, max: 16 },
   },
   {
-    id: 'level6-lesson4',
-    level: 6,
+    id: 'level8-lesson4',
+    level: 8,
     order: 4,
     learningObjective: 'Extended harmony: seventh chords and chromatic passing tones (C3–C6)',
     noteSet: [
