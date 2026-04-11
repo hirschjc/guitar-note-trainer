@@ -27,6 +27,19 @@ function groupByLevel() {
   return map
 }
 
+function StarRating({ qualifying }: { qualifying: number }) {
+  const filled = Math.min(qualifying, 5);
+  return (
+    <div className="flex gap-0.5" aria-label={`${filled} of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span key={i} className={i < filled ? 'text-amber-400' : 'text-gray-700'} style={{ fontSize: '14px' }}>
+          ★
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function LessonsPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -123,8 +136,6 @@ export default function LessonsPage() {
                       const p = progressMap.get(lesson.id)
                       const isUnlocked = p?.isUnlocked ?? (lesson.level === 1 && lesson.order === 1)
                       const isRecommended = lesson.id === recommendedLessonId
-                      const bestScore = p?.bestScore ?? 0
-                      const attempted = (p?.attemptCount ?? 0) > 0
 
                       return (
                         <div
@@ -140,6 +151,11 @@ export default function LessonsPage() {
                             <p className="text-sm text-gray-200 leading-snug">
                               {lesson.learningObjective}
                             </p>
+                            {lesson.lessonType === 'fingering' && (
+                              <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-emerald-700 text-emerald-100 rounded-full">
+                                🎸 Fingering
+                              </span>
+                            )}
                             {isRecommended && isUnlocked && (
                               <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-amber-500 text-gray-950 rounded-full">
                                 Recommended
@@ -149,20 +165,8 @@ export default function LessonsPage() {
                           <div className="flex items-center gap-2 shrink-0">
                             {!isUnlocked ? (
                               <span className="text-base">🔒</span>
-                            ) : attempted ? (
-                              <span
-                                className={`text-sm font-bold px-2 py-0.5 rounded-full ${
-                                  bestScore >= 80
-                                    ? 'bg-green-900 text-green-300'
-                                    : bestScore >= 60
-                                    ? 'bg-yellow-900 text-yellow-300'
-                                    : 'bg-red-900 text-red-300'
-                                }`}
-                              >
-                                {Math.round(bestScore)}%
-                              </span>
                             ) : (
-                              <span className="text-xs text-gray-500">Not started</span>
+                              <StarRating qualifying={p?.qualifyingCount ?? 0} />
                             )}
                           </div>
                         </div>

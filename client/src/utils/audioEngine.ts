@@ -1,4 +1,5 @@
 import * as Tone from 'tone';
+import type { FretPosition } from '../types';
 
 /**
  * Strips the enharmonic pair suffix from a note label.
@@ -125,8 +126,7 @@ export class AudioEngine {
    * @param noteName  e.g. "C", "F#", "Bb", "C#/Db"
    * @param octave    written treble-clef octave (will be transposed down 1)
    */
-  async playHint(noteName: string, octave: number): Promise<void> {
-    if (this._muted) return;
+  async playHint(noteName: string, octave: number): Promise<void> {    if (this._muted) return;
     const ready = await this.ensureInitialized();
     if (!ready || !this.synth) return;
 
@@ -146,6 +146,23 @@ export class AudioEngine {
     } catch {
       // Degrade silently
     }
+  }
+  /**
+   * Plays the note at a given fret position in Standard Tuning.
+   * Derives note name + octave from string/fret and calls playNote().
+   * Standard Tuning MIDI: string 6=E2(40), 5=A2(45), 4=D3(50), 3=G3(55), 2=B3(59), 1=E4(64)
+   */
+  async playNoteAtPosition(position: FretPosition): Promise<void> {
+    const OPEN_STRING_MIDI: Record<number, number> = {
+      6: 40, 5: 45, 4: 50, 3: 55, 2: 59, 1: 64,
+    };
+    const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    const midi = (OPEN_STRING_MIDI[position.string] ?? 64) + position.fret;
+    // Written octave = concert octave + 1 (guitar transposes down an octave)
+    const concertOct = Math.floor(midi / 12) - 1;
+    const writtenOctave = concertOct + 1;
+    const noteName = NOTE_NAMES[midi % 12];
+    await this.playNote(noteName, writtenOctave);
   }
 }
 

@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files (never commit secrets)
+.env
+server/.env
+
+# SQLite database
+server/prisma/*.db
+server/prisma/*.db-journal
+
+# Prisma generated client
+server/node_modules/
+
+# Vite cache
+client/.vite/
+
+# OS
+.DS_Store

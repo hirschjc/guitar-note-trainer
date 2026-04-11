@@ -23,6 +23,17 @@ export interface NotationObject {
   measures: Measure[];
 }
 
+export interface FretPosition {
+  string: number;   // 1 (high E) to 6 (low E)
+  fret: number;     // 0 (open) to 24
+  highlight?: 'correct' | 'incorrect' | 'reveal';
+}
+
+export interface FretRegion {
+  minFret: number;
+  maxFret: number;
+}
+
 export interface Lesson {
   id: string;             // e.g. "level1-lesson1"
   level: number;          // 1–6
@@ -31,6 +42,10 @@ export interface Lesson {
   noteSet: NoteWithOctave[];  // notes this lesson draws from
   octaveRange: [number, number];
   sequenceLength: { min: number; max: number };
+  lessonType?: 'note-reading' | 'fingering';
+  fretWindow?: { start: number; end: number };
+  fingeringPhase?: 'default' | 'alternate';
+  alternateFretRegion?: FretRegion;
 }
 
 export interface SessionResult {
@@ -50,5 +65,6 @@ export interface LessonProgress {
   lessonId: string;
   bestScore: number;
   attemptCount: number;
+  qualifyingCount: number; // sessions scoring >= MASTERY_THRESHOLD
   isUnlocked: boolean;
 }
