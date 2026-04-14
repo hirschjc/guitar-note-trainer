@@ -1,5 +1,5 @@
 import { LessonProgress } from '../types';
-import { LESSONS, MASTERY_THRESHOLD, MASTERY_REQUIRED_SESSIONS } from '../data/lessons';
+import { LESSONS, MASTERY_THRESHOLD } from '../data/lessons';
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
@@ -83,15 +83,9 @@ export function computeLessonProgress(
   }
 
   // Walk sorted lessons, computing isUnlocked for each
-  return sortedLessons.map((lesson, index) => {
-    let isUnlocked: boolean;
-    if (index === 0) {
-      isUnlocked = true;
-    } else {
-      const prevLesson = sortedLessons[index - 1];
-      const prevQualifying = qualifyingSessionsMap.get(prevLesson.id) ?? 0;
-      isUnlocked = prevQualifying >= MASTERY_REQUIRED_SESSIONS;
-    }
+  // All lessons are always unlocked — no gates
+  return sortedLessons.map((lesson, _index) => {
+    const isUnlocked = true;
 
     return {
       deviceId,

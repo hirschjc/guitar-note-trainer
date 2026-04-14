@@ -12,6 +12,8 @@ const LEVEL_NAMES: Record<number, string> = {
   4: 'Basic Chords',
   5: 'Common Keys',
   6: 'Extended Harmony',
+  7: 'Common Keys with Accidentals',
+  8: 'Chromatic Notes & Extended Harmony',
 }
 
 function getLevelName(level: number): string {
@@ -106,7 +108,6 @@ export default function LessonsPage() {
       <main className="px-4 py-6 space-y-3 max-w-2xl mx-auto">
         {levels.map((level) => {
           const lessons = levelGroups.get(level)!
-          const allLocked = lessons.every((l) => !(progressMap.get(l.id)?.isUnlocked ?? (l.level === 1 && l.order === 1)))
           const isExpanded = expandedLevels.has(level)
 
           return (
@@ -122,7 +123,6 @@ export default function LessonsPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-lg">
-                  <span>{allLocked ? '🔒' : '🔓'}</span>
                   <span className="text-gray-500 text-sm">{isExpanded ? '▲' : '▼'}</span>
                 </div>
               </button>
@@ -134,18 +134,13 @@ export default function LessonsPage() {
                     .sort((a, b) => a.order - b.order)
                     .map((lesson) => {
                       const p = progressMap.get(lesson.id)
-                      const isUnlocked = p?.isUnlocked ?? (lesson.level === 1 && lesson.order === 1)
                       const isRecommended = lesson.id === recommendedLessonId
 
                       return (
                         <div
                           key={lesson.id}
-                          onClick={() => isUnlocked && navigate(`/lesson/${lesson.id}`)}
-                          className={`flex items-center justify-between px-4 py-3 bg-gray-950 transition-colors ${
-                            isUnlocked
-                              ? 'cursor-pointer hover:bg-gray-900'
-                              : 'opacity-40 cursor-not-allowed'
-                          }`}
+                          onClick={() => navigate(`/lesson/${lesson.id}`)}
+                          className="flex items-center justify-between px-4 py-3 bg-gray-950 transition-colors cursor-pointer hover:bg-gray-900"
                         >
                           <div className="flex-1 min-w-0 pr-3">
                             <p className="text-sm text-gray-200 leading-snug">
@@ -156,18 +151,14 @@ export default function LessonsPage() {
                                 🎸 Fingering
                               </span>
                             )}
-                            {isRecommended && isUnlocked && (
+                            {isRecommended && (
                               <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium bg-amber-500 text-gray-950 rounded-full">
                                 Recommended
                               </span>
                             )}
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            {!isUnlocked ? (
-                              <span className="text-base">🔒</span>
-                            ) : (
-                              <StarRating qualifying={p?.qualifyingCount ?? 0} />
-                            )}
+                            <StarRating qualifying={p?.qualifyingCount ?? 0} />
                           </div>
                         </div>
                       )
