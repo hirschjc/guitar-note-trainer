@@ -22,6 +22,31 @@ function midiToNoteId(midi: number): string {
   return `${name}${octave}`;
 }
 
+/**
+ * Shift a note ID down by one octave for display purposes (guitar convention).
+ * e.g. "E2" → "E3", "A2" → "A3", "C4" → "C3"
+ * Guitar strings are conventionally labeled one octave higher than standard MIDI notation.
+ */
+export function displayNoteId(noteId: string): string {
+  const match = noteId.match(/^([A-Ga-g][#b]?)(\d+)$/);
+  if (!match) return noteId;
+  const [, name, octStr] = match;
+  return `${name}${parseInt(octStr, 10) + 1}`;
+}
+
+/**
+ * Shift a note ID down by one octave (e.g. "C4" → "C3", "F#5" → "F#4").
+ * Guitar is a transposing instrument: written pitch sounds one octave lower.
+ * Fingering evaluation must use the sounding (concert) pitch.
+ */
+export function shiftOctaveDown(noteId: string): string {
+  const match = noteId.match(/^([A-Ga-g][#b]?)(\d+)$/);
+  if (!match) return noteId;
+  const [, name, octStr] = match;
+  const octave = parseInt(octStr, 10);
+  return `${name}${octave - 1}`;
+}
+
 /** Normalize a note ID to use sharps only (e.g. "Bb3" → "A#3", "F#3" stays) */
 function normalizeNoteId(noteId: string): string {
   const flatToSharp: Record<string, string> = {

@@ -8,14 +8,15 @@ interface FretboardDisplayProps {
   disabled?: boolean;
 }
 
-// String labels top-to-bottom: string 1 (E4) at top, string 6 (E2) at bottom
+// String labels top-to-bottom: string 1 (E5) at top, string 6 (E3) at bottom
+// Using guitar octave convention (one octave higher than standard MIDI notation)
 const STRING_LABELS: Record<number, string> = {
-  1: 'E4',
-  2: 'B3',
-  3: 'G3',
-  4: 'D3',
-  5: 'A2',
-  6: 'E2',
+  1: 'E5',
+  2: 'B4',
+  3: 'G4',
+  4: 'D4',
+  5: 'A3',
+  6: 'E3',
 };
 
 // Standard fret marker positions

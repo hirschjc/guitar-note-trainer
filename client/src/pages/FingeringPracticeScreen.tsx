@@ -24,6 +24,14 @@ function getOctaveFromNote(noteWithOctave: string): number {
   return match ? parseInt(match[1], 10) : 4;
 }
 
+/** Shift a note ID up by one octave for staff display (guitar written pitch). */
+function shiftOctaveUp(noteId: string): string {
+  const match = noteId.match(/^([A-Ga-g][#b]?)(\d+)$/);
+  if (!match) return noteId;
+  const [, name, octStr] = match;
+  return `${name}${parseInt(octStr, 10) + 1}`;
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type GameState = 'playing' | 'sequence_complete' | 'level_complete';
@@ -97,7 +105,10 @@ export function FingeringPracticeScreen() {
     if (!lesson) return;
     const len = randomSequenceLength(lesson.sequenceLength.min, lesson.sequenceLength.max);
     const seq = generateSequence(lesson.noteSet, len);
-    const notationObj = buildNotationFromSequence(seq);
+    // Guitar is a transposing instrument: shift notes up one octave for staff display
+    // (written pitch is one octave higher than sounding pitch)
+    const writtenSeq = seq.map(shiftOctaveUp);
+    const notationObj = buildNotationFromSequence(writtenSeq);
     setSequence(seq);
     setNotation(notationObj);
     setActiveNoteIndex(0);

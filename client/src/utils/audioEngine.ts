@@ -158,11 +158,9 @@ export class AudioEngine {
     };
     const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const midi = (OPEN_STRING_MIDI[position.string] ?? 64) + position.fret;
-    // Written octave = concert octave + 1 (guitar transposes down an octave)
-    const concertOct = Math.floor(midi / 12) - 1;
-    const writtenOctave = concertOct + 1;
+    const octave = Math.floor(midi / 12) - 1;
     const noteName = NOTE_NAMES[midi % 12];
-    await this.playNote(noteName, writtenOctave);
+    await this.playNote(noteName, octave);
   }
 }
 
