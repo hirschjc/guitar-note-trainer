@@ -52,9 +52,10 @@ export function FretboardDisplay({
   }
 
   return (
-    <div style={{ width: '100%', overflowX: 'hidden' }}>
+    <div style={{ width: '100%', height: '100%', overflowX: 'hidden' }}>
       <svg
         width="100%"
+        height="100%"
         viewBox={`0 0 ${boardWidth} ${boardHeight}`}
         preserveAspectRatio="xMidYMid meet"
         style={{ display: 'block', touchAction: 'manipulation' }}

@@ -240,7 +240,7 @@ export function FingeringPracticeScreen() {
   // ─── Render ──────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col">
+    <div className="h-screen bg-gray-950 text-white flex flex-col overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800 shrink-0">
         <button
@@ -267,13 +267,13 @@ export function FingeringPracticeScreen() {
 
       {/* Note name label */}
       {activeNote && (
-        <div className="text-center pt-3 pb-1 shrink-0">
+        <div className="text-center pt-2 pb-0 shrink-0">
           <span className="text-2xl font-bold text-amber-400">{activeNoteName}</span>
         </div>
       )}
 
-      {/* Staff Display */}
-      <div className="px-4 pt-2 pb-2 shrink-0">
+      {/* Staff Display — scrollable on mobile if too tall, capped so fretboard always shows */}
+      <div className="px-4 pt-1 pb-1 shrink-0 overflow-hidden" style={{ maxHeight: '35vh' }}>
         {notation && (
           <StaffDisplay
             notation={notation}
@@ -283,15 +283,15 @@ export function FingeringPracticeScreen() {
       </div>
 
       {/* Progress indicator */}
-      <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-400 shrink-0">
+      <div className="flex items-center justify-between px-4 py-1 text-sm text-gray-400 shrink-0">
         <span>
           Note {Math.min(activeNoteIndex + 1, sequence.length)} of {sequence.length}
         </span>
         <span>Score: {runningScore}%</span>
       </div>
 
-      {/* Fretboard */}
-      <div className="px-4 pb-6 flex-1">
+      {/* Fretboard — takes all remaining space, guaranteed visible */}
+      <div className="px-4 pb-4 flex-1 min-h-0">
         <FretboardDisplay
           fretWindow={fretWindow}
           showStringLabels={showLabels}
