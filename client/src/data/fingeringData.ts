@@ -23,15 +23,11 @@ function midiToNoteId(midi: number): string {
 }
 
 /**
- * Shift a note ID down by one octave for display purposes (guitar convention).
- * e.g. "E2" → "E3", "A2" → "A3", "C4" → "C3"
- * Guitar strings are conventionally labeled one octave higher than standard MIDI notation.
+ * Return the note ID as-is for display.
+ * The app uses concert pitch throughout; no octave offset needed.
  */
 export function displayNoteId(noteId: string): string {
-  const match = noteId.match(/^([A-Ga-g][#b]?)(\d+)$/);
-  if (!match) return noteId;
-  const [, name, octStr] = match;
-  return `${name}${parseInt(octStr, 10) + 1}`;
+  return noteId;
 }
 
 /**
