@@ -1,7 +1,0 @@
-.env
-node_modules/
-dist/
-prisma/*.db
-prisma/*.db-journal
-.DS_Store
-coverage/

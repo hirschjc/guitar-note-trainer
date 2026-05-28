@@ -4,9 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LESSONS } from '../data/lessons';
 import { generateSequence, randomSequenceLength } from '../utils/sequenceGenerator';
 import { buildNotationFromSequence } from '../utils/notation';
-import { calculateMasteryScore } from '../utils/mastery';
 import { audioEngine } from '../utils/audioEngine';
-import { progressTracker } from '../utils/progressTracker';
 import { StaffDisplay } from '../components/StaffDisplay';
 import { NoteButtonGrid } from '../components/NoteButtonGrid';
 import type { NotationObject } from '../types';
@@ -63,8 +61,7 @@ export function PracticeScreen() {
   const [activeNoteIndex, setActiveNoteIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
-  const [currentNoteHadError, setCurrentNoteHadError] = useState(false); // tracks if current note was missed
-  const [startTime, setStartTime] = useState<number>(0);
+  const [currentNoteHadError, setCurrentNoteHadError] = useState(false); // tracks if current note was missed;
   const [lastTappedNote, setLastTappedNote] = useState<string | null>(null);
   const [lastTapCorrect, setLastTapCorrect] = useState<boolean | null>(null);
   const [correctNote, setCorrectNote] = useState<string | null>(null);
@@ -133,7 +130,6 @@ export function PracticeScreen() {
     setCorrectCount(0);
     setIncorrectCount(0);
     setCurrentNoteHadError(false);
-    setStartTime(Date.now());
     setLastTappedNote(null);
     setLastTapCorrect(null);
     setCorrectNote(null);
@@ -181,19 +177,9 @@ export function PracticeScreen() {
 
       if (newIndex >= sequence.length) {
         // Sequence complete
-        const totalTimeMs = Date.now() - startTime;
-        const score = calculateMasteryScore(newCorrectCount, incorrectCount, totalTimeMs);
-        const roundedScore = Math.round(score);
+        const totalNotes = newCorrectCount + incorrectCount;
+        const roundedScore = totalNotes > 0 ? Math.round((newCorrectCount / totalNotes) * 100) : 100;
         setFinalScore(roundedScore);
-
-        progressTracker.recordSession({
-          lessonId: lesson!.id,
-          attemptedAt: new Date().toISOString(),
-          correctCount: newCorrectCount,
-          incorrectCount,
-          totalTimeMs,
-          score: roundedScore,
-        });
 
         if (roundedScore >= 80 && isLastLessonInLevel()) {
           setGameState('level_complete');

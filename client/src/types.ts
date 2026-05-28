@@ -48,23 +48,5 @@ export interface Lesson {
   alternateFretRegion?: FretRegion;
 }
 
-export interface SessionResult {
-  id: string;             // UUID, generated client-side
-  deviceId: string;
-  lessonId: string;
-  attemptedAt: string;    // ISO 8601
-  correctCount: number;
-  incorrectCount: number;
-  totalTimeMs: number;
-  score: number;          // 0–100
-  synced: boolean;
-}
 
-export interface LessonProgress {
-  deviceId: string;
-  lessonId: string;
-  bestScore: number;
-  attemptCount: number;
-  qualifyingCount: number; // sessions scoring >= MASTERY_THRESHOLD
-  isUnlocked: boolean;
-}
+

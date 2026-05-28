@@ -4,9 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LESSONS } from '../data/lessons';
 import { generateSequence, randomSequenceLength } from '../utils/sequenceGenerator';
 import { buildNotationFromSequence } from '../utils/notation';
-import { calculateMasteryScore } from '../utils/mastery';
 import { audioEngine } from '../utils/audioEngine';
-import { progressTracker } from '../utils/progressTracker';
 import { StaffDisplay } from '../components/StaffDisplay';
 import { FretboardDisplay } from '../components/FretboardDisplay';
 import { getValidFingerings, isValidFingering, shouldShowStringLabels } from '../data/fingeringData';
@@ -50,7 +48,6 @@ export function FingeringPracticeScreen() {
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
   const [currentNoteHadError, setCurrentNoteHadError] = useState(false);
-  const [startTime, setStartTime] = useState<number>(0);
   const [highlightedPositions, setHighlightedPositions] = useState<FretPosition[]>([]);
   const [fretboardDisabled, setFretboardDisabled] = useState(false);
   const [gameState, setGameState] = useState<GameState>('playing');
@@ -115,7 +112,6 @@ export function FingeringPracticeScreen() {
     setCorrectCount(0);
     setIncorrectCount(0);
     setCurrentNoteHadError(false);
-    setStartTime(Date.now());
     setHighlightedPositions([]);
     setFretboardDisabled(false);
     setGameState('playing');
@@ -161,19 +157,9 @@ export function FingeringPracticeScreen() {
         setActiveNoteIndex(newIndex);
 
         if (newIndex >= sequence.length) {
-          const totalTimeMs = Date.now() - startTime;
-          const score = calculateMasteryScore(newCorrectCount, incorrectCount, totalTimeMs);
-          const roundedScore = Math.round(score);
+          const totalNotes = newCorrectCount + incorrectCount;
+          const roundedScore = totalNotes > 0 ? Math.round((newCorrectCount / totalNotes) * 100) : 100;
           setFinalScore(roundedScore);
-
-          progressTracker.recordSession({
-            lessonId: lesson!.id,
-            attemptedAt: new Date().toISOString(),
-            correctCount: newCorrectCount,
-            incorrectCount,
-            totalTimeMs,
-            score: roundedScore,
-          });
 
           if (roundedScore >= 80 && isLastLessonInLevel()) {
             setGameState('level_complete');
