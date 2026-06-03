@@ -146,8 +146,7 @@ export function FingeringPracticeScreen() {
         setActiveNoteIndex(newIndex);
 
         if (newIndex >= sequence.length) {
-          const totalNotes = newCorrectCount + incorrectCount;
-          const roundedScore = totalNotes > 0 ? Math.round((newCorrectCount / totalNotes) * 100) : 100;
+          const roundedScore = sequence.length > 0 ? Math.round((newCorrectCount / sequence.length) * 100) : 100;
           setFinalScore(roundedScore);
 
           if (roundedScore >= 80 && isLastLessonInLevel()) {
