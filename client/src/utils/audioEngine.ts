@@ -158,7 +158,7 @@ export class AudioEngine {
     };
     const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
     const midi = (OPEN_STRING_MIDI[position.string] ?? 64) + position.fret;
-    const octave = Math.floor(midi / 12) - 1;
+    const octave = Math.floor(midi / 12); // written octave: playNote() will subtract 1 for concert pitch
     const noteName = NOTE_NAMES[midi % 12];
     await this.playNote(noteName, octave);
   }

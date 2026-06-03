@@ -7,7 +7,7 @@ import { buildNotationFromSequence } from '../utils/notation';
 import { audioEngine } from '../utils/audioEngine';
 import { StaffDisplay } from '../components/StaffDisplay';
 import { FretboardDisplay } from '../components/FretboardDisplay';
-import { getValidFingerings, isValidFingering, shouldShowStringLabels } from '../data/fingeringData';
+import { getValidFingerings, isValidFingering, shouldShowStringLabels, shiftOctaveDown } from '../data/fingeringData';
 import type { NotationObject, FretPosition } from '../types';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -125,7 +125,7 @@ export function FingeringPracticeScreen() {
 
     const phase = lesson?.fingeringPhase ?? 'default';
     const region = lesson?.alternateFretRegion;
-    const correct = isValidFingering(activeNote, position, phase, region);
+    const correct = isValidFingering(shiftOctaveDown(activeNote), position, phase, region);
 
     if (correct) {
       if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
@@ -170,7 +170,7 @@ export function FingeringPracticeScreen() {
       }, 800);
 
       // Build reveal highlights: tapped position in red + all valid positions in green
-      const validPositions = getValidFingerings(activeNote, phase, region);
+      const validPositions = getValidFingerings(shiftOctaveDown(activeNote), phase, region);
       const newHighlights: FretPosition[] = [
         { ...position, highlight: 'incorrect' },
         ...validPositions.map((p) => ({ ...p, highlight: 'reveal' as const })),
