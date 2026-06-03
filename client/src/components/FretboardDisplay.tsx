@@ -30,15 +30,21 @@ export function FretboardDisplay({
   disabled = false,
 }: FretboardDisplayProps) {
   const { start, end } = fretWindow;
-  const fretCount = end - start + 1;
   const stringCount = 6;
+
+  // When the window includes fret 0, separate it into an "open" zone left of the nut
+  const hasOpenZone = start === 0;
+  const gridStart = hasOpenZone ? 1 : start;
+  const gridCount = end - gridStart + 1;
 
   // SVG layout constants
   const labelWidth = showStringLabels ? 36 : 8;
+  const openZoneWidth = hasOpenZone ? 52 : 0;
   const cellW = 60;
   const cellH = 44;
-  const nutWidth = start === 0 ? 6 : 2;
-  const boardWidth = labelWidth + nutWidth + fretCount * cellW;
+  const nutWidth = 6;
+  const gridOriginX = labelWidth + openZoneWidth + nutWidth;
+  const boardWidth = gridOriginX + gridCount * cellW;
   const boardHeight = stringCount * cellH + 20; // +20 for fret marker dots below
 
   function getHighlight(str: number, fret: number): 'correct' | 'incorrect' | 'reveal' | null {
@@ -47,9 +53,19 @@ export function FretboardDisplay({
   }
 
   function highlightColor(h: 'correct' | 'incorrect' | 'reveal'): string {
-    if (h === 'correct' || h === 'reveal') return '#22c55e'; // green-500
-    return '#ef4444'; // red-500
+    if (h === 'correct' || h === 'reveal') return '#22c55e';
+    return '#ef4444';
   }
+
+  const tapProps = (str: number, fret: number) => ({
+    fill: 'transparent' as const,
+    style: { cursor: disabled ? ('default' as const) : ('pointer' as const) },
+    onClick: () => { if (!disabled) onFretTap({ string: str, fret }); },
+    onTouchEnd: (e: React.TouchEvent) => {
+      if (!disabled) { e.preventDefault(); onFretTap({ string: str, fret }); }
+    },
+    role: 'button' as const,
+  });
 
   return (
     <div style={{ width: '100%', height: '100%', overflowX: 'hidden' }}>
@@ -64,42 +80,46 @@ export function FretboardDisplay({
         {/* Background */}
         <rect x={0} y={0} width={boardWidth} height={boardHeight} fill="#1c1008" rx={6} />
 
-        {/* Nut / left border */}
+        {/* Open zone background */}
+        {hasOpenZone && (
+          <rect
+            x={labelWidth} y={0}
+            width={openZoneWidth} height={stringCount * cellH}
+            fill="#111827"
+          />
+        )}
+
+        {/* Nut */}
         <rect
-          x={labelWidth}
+          x={labelWidth + openZoneWidth}
           y={0}
           width={nutWidth}
           height={stringCount * cellH}
-          fill={start === 0 ? '#e5e7eb' : '#6b7280'}
+          fill="#e5e7eb"
         />
 
         {/* Fret lines */}
-        {Array.from({ length: fretCount + 1 }, (_, i) => {
-          const x = labelWidth + nutWidth + i * cellW;
+        {Array.from({ length: gridCount + 1 }, (_, i) => {
+          const x = gridOriginX + i * cellW;
           return (
             <line
               key={`fret-${i}`}
-              x1={x} y1={0}
-              x2={x} y2={stringCount * cellH}
-              stroke="#6b7280"
-              strokeWidth={1.5}
+              x1={x} y1={0} x2={x} y2={stringCount * cellH}
+              stroke="#6b7280" strokeWidth={1.5}
             />
           );
         })}
 
-        {/* String lines */}
+        {/* String lines — extend through open zone and frets */}
         {Array.from({ length: stringCount }, (_, i) => {
-          const str = i + 1; // string 1 at top
+          const str = i + 1;
           const y = i * cellH + cellH / 2;
-          // Thicker strings for lower-pitched strings
           const thickness = 0.8 + (str - 1) * 0.35;
           return (
             <line
               key={`string-${str}`}
-              x1={labelWidth + nutWidth} y1={y}
-              x2={boardWidth} y2={y}
-              stroke="#d4a853"
-              strokeWidth={thickness}
+              x1={labelWidth} y1={y} x2={boardWidth} y2={y}
+              stroke="#d4a853" strokeWidth={thickness}
             />
           );
         })}
@@ -112,94 +132,98 @@ export function FretboardDisplay({
             return (
               <text
                 key={`label-${str}`}
-                x={labelWidth - 4}
-                y={y + 5}
-                textAnchor="end"
-                fontSize={11}
-                fill="#9ca3af"
-                fontFamily="monospace"
+                x={labelWidth - 4} y={y + 5}
+                textAnchor="end" fontSize={11}
+                fill="#9ca3af" fontFamily="monospace"
               >
                 {STRING_LABELS[str]}
               </text>
             );
           })}
 
-        {/* Fret marker dots */}
-        {Array.from({ length: fretCount }, (_, i) => {
-          const fret = start + i;
-          if (!FRET_MARKERS.has(fret)) return null;
-          const cx = labelWidth + nutWidth + i * cellW + cellW / 2;
-          const cy = stringCount * cellH + 10;
+        {/* Open zone: "O" indicators + tap targets */}
+        {hasOpenZone && Array.from({ length: stringCount }, (_, si) => {
+          const str = si + 1;
+          const y = si * cellH;
+          const cy = y + cellH / 2;
+          const cx = labelWidth + openZoneWidth / 2;
+          const hl = getHighlight(str, 0);
           return (
-            <circle
-              key={`marker-${fret}`}
-              cx={cx} cy={cy}
-              r={4}
-              fill="#6b7280"
-            />
+            <g key={`open-${str}`}>
+              {hl ? (
+                <circle cx={cx} cy={cy} r={16} fill={highlightColor(hl)} opacity={0.85} />
+              ) : (
+                <circle cx={cx} cy={cy} r={11} fill="none" stroke="#6b7280" strokeWidth={1.5} />
+              )}
+              <rect
+                x={labelWidth} y={y}
+                width={openZoneWidth} height={cellH}
+                aria-label={`String ${str}, open`}
+                {...tapProps(str, 0)}
+              />
+            </g>
+          );
+        })}
+
+        {/* "open" label below the open zone */}
+        {hasOpenZone && (
+          <text
+            x={labelWidth + openZoneWidth / 2}
+            y={stringCount * cellH + 14}
+            textAnchor="middle" fontSize={9}
+            fill="#6b7280" fontFamily="monospace"
+          >
+            open
+          </text>
+        )}
+
+        {/* Fret marker dots */}
+        {Array.from({ length: gridCount }, (_, i) => {
+          const fret = gridStart + i;
+          if (!FRET_MARKERS.has(fret)) return null;
+          const cx = gridOriginX + i * cellW + cellW / 2;
+          return (
+            <circle key={`marker-${fret}`} cx={cx} cy={stringCount * cellH + 10} r={4} fill="#6b7280" />
           );
         })}
 
         {/* Fret number labels */}
-        {Array.from({ length: fretCount }, (_, i) => {
-          const fret = start + i;
+        {Array.from({ length: gridCount }, (_, i) => {
+          const fret = gridStart + i;
           if (!FRET_MARKERS.has(fret)) return null;
-          const cx = labelWidth + nutWidth + i * cellW + cellW / 2;
-          const cy = stringCount * cellH + 18;
+          const cx = gridOriginX + i * cellW + cellW / 2;
           return (
             <text
               key={`fret-num-${fret}`}
-              x={cx} y={cy}
-              textAnchor="middle"
-              fontSize={9}
-              fill="#6b7280"
-              fontFamily="monospace"
+              x={cx} y={stringCount * cellH + 18}
+              textAnchor="middle" fontSize={9}
+              fill="#6b7280" fontFamily="monospace"
             >
               {fret}
             </text>
           );
         })}
 
-        {/* Tap targets + highlights */}
+        {/* Tap targets + highlights for fretted positions */}
         {Array.from({ length: stringCount }, (_, si) => {
           const str = si + 1;
-          return Array.from({ length: fretCount }, (_, fi) => {
-            const fret = start + fi;
-            const x = labelWidth + nutWidth + fi * cellW;
+          return Array.from({ length: gridCount }, (_, fi) => {
+            const fret = gridStart + fi;
+            const x = gridOriginX + fi * cellW;
             const y = si * cellH;
-            const highlight = getHighlight(str, fret);
-
+            const hl = getHighlight(str, fret);
             return (
               <g key={`cell-${str}-${fret}`}>
-                {/* Highlight circle */}
-                {highlight && (
+                {hl && (
                   <circle
-                    cx={x + cellW / 2}
-                    cy={y + cellH / 2}
-                    r={16}
-                    fill={highlightColor(highlight)}
-                    opacity={0.85}
+                    cx={x + cellW / 2} cy={y + cellH / 2}
+                    r={16} fill={highlightColor(hl)} opacity={0.85}
                   />
                 )}
-                {/* Invisible tap target — minimum 44×44 */}
                 <rect
-                  x={x}
-                  y={y}
-                  width={cellW}
-                  height={cellH}
-                  fill="transparent"
-                  style={{ cursor: disabled ? 'default' : 'pointer' }}
-                  onClick={() => {
-                    if (!disabled) onFretTap({ string: str, fret });
-                  }}
-                  onTouchEnd={(e) => {
-                    if (!disabled) {
-                      e.preventDefault();
-                      onFretTap({ string: str, fret });
-                    }
-                  }}
+                  x={x} y={y} width={cellW} height={cellH}
                   aria-label={`String ${str}, fret ${fret}`}
-                  role="button"
+                  {...tapProps(str, fret)}
                 />
               </g>
             );
