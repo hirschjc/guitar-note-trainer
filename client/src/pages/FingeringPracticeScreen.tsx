@@ -7,7 +7,7 @@ import { buildNotationFromSequence } from '../utils/notation';
 import { audioEngine } from '../utils/audioEngine';
 import { StaffDisplay } from '../components/StaffDisplay';
 import { FretboardDisplay } from '../components/FretboardDisplay';
-import { getValidFingerings, isValidFingering, shouldShowStringLabels, shiftOctaveDown } from '../data/fingeringData';
+import { getValidFingerings, isValidFingering, shiftOctaveDown } from '../data/fingeringData';
 import type { NotationObject, FretPosition } from '../types';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -92,7 +92,12 @@ export function FingeringPracticeScreen() {
 
   function startNewSequence() {
     if (!lesson) return;
-    const len = randomSequenceLength(lesson.sequenceLength.min, lesson.sequenceLength.max);
+    // Fingering staff shares vertical space with the fretboard (capped at 35vh),
+    // which fits two measures (8 notes). Cap the length so nothing is clipped.
+    const MAX_FINGERING_NOTES = 8;
+    const min = Math.min(lesson.sequenceLength.min, MAX_FINGERING_NOTES);
+    const max = Math.min(lesson.sequenceLength.max, MAX_FINGERING_NOTES);
+    const len = randomSequenceLength(min, max);
     const seq = generateSequence(lesson.noteSet, len);
     const notationObj = buildNotationFromSequence(seq);
     setSequence(seq);
@@ -202,7 +207,8 @@ export function FingeringPracticeScreen() {
     totalAttempts > 0 ? Math.round((correctCount / totalAttempts) * 100) : 100;
 
   const fretWindow = lesson?.fretWindow ?? { start: 0, end: 5 };
-  const showLabels = shouldShowStringLabels(lesson?.level ?? 1);
+  // String labels (E5, B4, …) intentionally hidden — they're a crutch.
+  const showLabels = false;
 
   const activeNote = sequence[activeNoteIndex];
   const activeNoteName = activeNote
